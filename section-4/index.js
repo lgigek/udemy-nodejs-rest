@@ -17,6 +17,7 @@ const courses = [
     {id: 2, name: 'two'},
     {id: 3, name: 'three'}
 ];
+let last_id = courses.length;
 
 app.get('/', (req, resp) => {
     resp.send('Hello World');
@@ -41,7 +42,7 @@ app.post('/api/courses', (req, resp) => {
     if (error) return resp.status(400).send({message: error.details[0].message});
 
     const course = {
-        id: courses.length + 1,
+        id: last_id + 1,
         name: req.body.name
     };
 
