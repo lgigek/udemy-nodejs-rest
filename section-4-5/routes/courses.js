@@ -1,15 +1,6 @@
-const Joi = require('joi');
 const express = require('express');
-
-// creates express app
-const app = express();
-
-// adds a middleware that enables get document from body of request
-app.use(express.json());
-
-// uses 3000 as default port if env variable is not defined
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Server started at port ${port}`));
+const router = express.Router();
+const Joi = require('joi');
 
 // mocked data
 const courses = [
@@ -17,19 +8,16 @@ const courses = [
     {id: 2, name: 'two'},
     {id: 3, name: 'three'}
 ];
+
 let last_id = courses.length;
 
-app.get('/', (req, resp) => {
-    resp.send('Hello World');
-});
-
 // route that returns all courses
-app.get('/api/courses', (req, resp) => {
+router.get('/', (req, resp) => {
     resp.send(courses);
 });
 
 // route that returns a task by its id
-app.get('/api/courses/:id', (req, resp) => {
+router.get('/:id', (req, resp) => {
     let course = courses.find(value => value.id === parseInt(req.params.id));
     if (!course) return resp.status(404).send({message: 'The course was not found'});
 
@@ -37,7 +25,7 @@ app.get('/api/courses/:id', (req, resp) => {
 });
 
 // route that adds a new course
-app.post('/api/courses', (req, resp) => {
+router.post('/', (req, resp) => {
     let {error} = validate_course(req.body);
     if (error) return resp.status(400).send({message: error.details[0].message});
 
@@ -51,7 +39,7 @@ app.post('/api/courses', (req, resp) => {
 });
 
 // route that updates an existing course
-app.put('/api/courses/:id', (req, resp) => {
+router.put('/:id', (req, resp) => {
     let course = courses.find(value => value.id === parseInt(req.params.id));
 
     if (!course) return resp.status(404).send({message: 'The course was not found'});
@@ -65,7 +53,8 @@ app.put('/api/courses/:id', (req, resp) => {
     resp.status(200).send(course);
 });
 
-app.delete('/api/courses/:id', (req, resp) => {
+// route that deletes an existing course
+router.delete('/:id', (req, resp) => {
     let course = courses.find(value => value.id === parseInt(req.params.id));
     if (!course) return resp.status(404).send({message: 'The course was not found'});
 
@@ -83,3 +72,4 @@ function validate_course(course) {
     return Joi.validate(course, schema);
 }
 
+module.exports = router;
