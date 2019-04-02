@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+  web:
+    build: .
+    depends_on:
+      - db
+  db:
+    image: mongo:4.0.8
